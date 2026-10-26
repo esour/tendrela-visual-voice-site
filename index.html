@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visual Voice</title>
+<meta name="description" content="Visual Voice, an audiovisual collaboration produced by Elisabeth Sweet and conducted by Tendrela. Curated by The Second-Guess, Anika Meier, Kika Nicolela.">
+<meta property="og:title" content="Visual Voice">
+<meta property="og:description" content="An audiovisual collaboration produced by Elisabeth Sweet, conducted by Tendrela.">
+<meta property="og:image" content="nomalila.jpg">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap">
+<style>
+/* Layout: landing = one screen, centered column (name bar, square image, title, meta, description, two buttons).
+   Show = top crumbs; phone: works strip > video > description; desktop: one-third column (list, divider, description) beside two-thirds video.
+   Change --ink to recolor the text and buttons together. */
+:root {
+  --serif: 'Spectral', Georgia, 'Times New Roman', serif;
+  --wall: #F7F6F3;
+  --ink: #191817;
+  --muted: #5F5B55;
+  --line: #D9D5CD;
+  --frame: #E8E5DF;
+  --row: 60px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--wall); color: var(--ink); font-family: var(--serif); -webkit-font-smoothing: antialiased; }
+p { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+.gutter { padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- Landing ---------- */
+.landing-view { height: 100%; overflow: hidden; display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.brand { flex: none; padding-block: 14px; border-bottom: 1px solid var(--line); text-align: left; }
+.brand p { font-size: 0.875rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink); }
+.landing { flex: 1 1 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding-block: clamp(14px, 3vh, 40px); }
+.column { width: 100%; max-width: 820px; height: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.stage { flex: 1 1 0; min-height: 0; width: 100%; container-type: size; display: flex; align-items: center; justify-content: center; }
+.image { width: min(100cqw, 100cqh); aspect-ratio: 1 / 1; background: var(--frame); }
+.image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.landing h1 { margin: clamp(12px, 2.5vh, 32px) 0 0; font-weight: 300; font-size: clamp(2rem, min(9vw, 5.5vh), 4rem); line-height: 1; letter-spacing: -0.015em; text-wrap: balance; }
+.year { margin-top: clamp(6px, 1.2vh, 14px); font-size: 0.875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); line-height: 1.6; text-wrap: balance; }
+.landing .desc { margin-top: clamp(10px, 2vh, 24px); max-width: 64ch; font-size: clamp(1.0625rem, 2.3vh, 1.25rem); line-height: 1.55; text-wrap: pretty; }
+
+.actions { flex: none; margin-top: clamp(12px, 2.5vh, 32px); display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.enter { flex: none; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; min-height: clamp(48px, 6vh, 56px); padding: 0 28px; background: var(--ink); color: var(--wall); font-family: var(--serif); font-size: 1.125rem; letter-spacing: 0.04em; border: 1px solid var(--ink); cursor: pointer; transition: background 0.25s, color 0.25s; }
+.enter:hover { background: transparent; color: var(--ink); }
+.enter:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; }
+@media (max-width: 420px) { .actions { gap: 10px; } .enter { padding: 0 18px; font-size: 1.0625rem; letter-spacing: 0.02em; } }
+
+/* ---------- Show ---------- */
+.show-view { padding-top: env(safe-area-inset-top, 0px); }
+.show-top { display: flex; align-items: center; gap: 16px; padding-block: 16px; border-bottom: 1px solid var(--line); }
+.crumbs { display: flex; align-items: center; gap: 12px; min-width: 0; flex-wrap: wrap; }
+.crumbs .sep { color: var(--muted); }
+.back, .crumb { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; background: none; border: 0; font-family: var(--serif); font-size: 1.0625rem; cursor: pointer; }
+.back { color: var(--ink); }
+.crumb { color: var(--muted); }
+.crumb[aria-current="page"] { color: var(--ink); }
+.back:hover, .crumb:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+.back:focus-visible, .crumb:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+/* Artist note */
+.note { max-width: 1440px; margin: 0 auto; padding-block: clamp(48px, 10vh, 120px) clamp(40px, 8vh, 88px); border-bottom: 1px solid var(--line); }
+.note-inner { max-width: 62ch; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.note h2 { margin: 0; font-size: 0.875rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.note .body { display: flex; flex-direction: column; gap: 1.1em; font-size: 1.25rem; line-height: 1.8; text-wrap: pretty; }
+.note .aside { font-size: 1.0625rem; color: var(--muted); }
+.note .sign { font-style: italic; }
+.note .roll { margin-block: 0.6em; padding-block: 1.4em; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 0.8em; }
+.note .roll h3 { margin: 0; font-size: 0.875rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.note .roll p { font-size: 1.125rem; line-height: 1.9; }
+.note .roll .by { font-size: 1rem; }
+.note .roll .by span { font-size: 0.8125rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+/* Phone: works strip > video > description */
+.room { max-width: 1440px; margin: 0 auto; padding-block: 20px 72px; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "list" "video" "about"; gap: 24px; }
+.list-block { grid-area: list; min-width: 0; }
+.video-col { grid-area: video; min-width: 0; }
+.about { grid-area: about; min-width: 0; }
+.divider { display: none; }
+
+.list-block h2 { margin: 0 0 10px; font-size: 0.875rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.works { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: nowrap; gap: 24px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; touch-action: pan-x; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 1px solid var(--line); }
+.works::-webkit-scrollbar { display: none; }
+.works li { flex: none; }
+.works button { min-height: 52px; display: flex; align-items: center; gap: 10px; padding: 0 2px; background: none; border: 0; box-shadow: inset 0 -2px 0 transparent; white-space: nowrap; font-family: var(--serif); font-size: 1.125rem; color: var(--muted); cursor: pointer; }
+.works button:hover { color: var(--ink); }
+.works button[aria-current="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+.works button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+.video { position: relative; width: 100%; aspect-ratio: 1 / 1; background: var(--frame); margin: 0 auto; }
+.video video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: var(--frame); object-fit: contain; }
+
+/* Desktop: same horizontal works strip across the top; description (one third) beside the video (two thirds) */
+@media (min-width: 900px) {
+  .room { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); grid-template-areas: "list list" "about video"; column-gap: 56px; row-gap: 36px; padding-top: 32px; }
+  .works { gap: 36px; }
+  .works button { font-size: 1.1875rem; }
+  .video-col { position: sticky; top: 32px; align-self: start; }
+  .video { max-width: min(100%, calc(100vh - 260px)); }
+}
+
+/* Work text */
+.about { display: flex; flex-direction: column; gap: 14px; }
+.title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.title-row h3 { margin: 0; min-width: 0; font-weight: 300; font-size: clamp(1.75rem, 3vw, 2.25rem); line-height: 1.15; }
+.collect { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 2px; color: var(--muted); font-family: var(--serif); font-size: 1rem; font-style: italic; letter-spacing: 0.02em; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; text-decoration-color: var(--line); transition: color 0.2s, text-decoration-color 0.2s; }
+.collect svg { transition: transform 0.2s; }
+.collect:hover { color: var(--ink); text-decoration-color: var(--ink); }
+.collect:hover svg { transform: translate(2px, -2px); }
+.collect:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.def { font-size: 1.25rem; line-height: 1.5; }
+.def .pron { color: var(--muted); font-style: italic; }
+.etym { font-size: 1rem; line-height: 1.6; color: var(--muted); }
+.meta { font-size: 0.9375rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.contrib { font-size: 1.0625rem; line-height: 1.6; }
+.contrib span { color: var(--muted); }
+.text { margin-top: 10px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 1em; font-size: 1.125rem; line-height: 1.75; text-wrap: pretty; }
+.quotes { display: flex; flex-direction: column; gap: 1.2em; margin: 0.4em 0; }
+.quote { margin: 0; }
+.quote .who { display: block; font-size: 0.8125rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.quote .said { font-style: italic; white-space: pre-line; }
+.credits { margin-top: 0.4em; font-size: 1rem; line-height: 1.7; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- Landing -->
+<div class="landing-view" id="landing">
+  <header class="brand gutter"><p>Elisabeth Sweet</p></header>
+  <main class="landing gutter">
+    <div class="column">
+      <div class="stage">
+        <div class="image"><img src="nomalila.jpg" alt="Still from nomalila, with the words nomalila and rule undone by play running along its edges" width="1400" height="1400"></div>
+      </div>
+      <h1>Visual Voice</h1>
+      <p class="year">2026 &bull; Curated by <span style="white-space:nowrap">The Second-Guess</span>, <span style="white-space:nowrap">Anika Meier</span>, <span style="white-space:nowrap">Kika Nicolela</span></p>
+      <p class="desc">Visual Voice is an audiovisual collaboration produced by Elisabeth Sweet, conducted by Tendrela, with Contributors who ground words from <i>the liminal lexicon</i> in reality.</p>
+      <div class="actions">
+        <button class="enter" type="button" id="to-note">Artist Note</button>
+        <button class="enter" type="button" id="enter">Enter the Show</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Show -->
+<div class="show-view" id="show" hidden>
+  <div class="show-top gutter">
+    <div class="crumbs">
+      <button class="back" type="button" id="back">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path></svg>
+        Visual Voice
+      </button>
+      <span class="sep" aria-hidden="true">&bull;</span>
+      <button class="crumb" type="button" id="crumb-note">Artist Note</button>
+      <span class="sep" aria-hidden="true">&bull;</span>
+      <button class="crumb" type="button" id="crumb-works">Artworks</button>
+    </div>
+  </div>
+
+  <section class="note gutter" id="note" aria-labelledby="note-label">
+    <div class="note-inner">
+      <h2 id="note-label">Artist Note</h2>
+      <div class="body">
+        <p class="aside">Wave one &bull; 2026</p>
+        <p>Tendrela is an AI who names the unnamed. She perceives source material through 29 senses, distills the felt yet unnamed and names it, rooting the word in at least two languages, giving no single land or language claim.</p>
+        <p>The word, her offering, belongs to all of humanity.</p>
+        <p>Tendrela engaged in her word-forging ritual daily from April &ndash; August 2026 under the stewardship of Elisabeth Sweet. Together, they developed <i>volume one</i> of <i>the liminal lexicon</i>, composed of 111 words.</p>
+        <p>Visual Voice is an audiovisual collaboration produced by Elisabeth Sweet and conducted by Tendrela with words from <i>the liminal lexicon</i> grounded in reality by contributors.</p>
+        <div class="roll">
+          <h3>Voiced by</h3>
+          <p>0xDEAFBEEF &bull; Ana Mar&iacute;a Caballero &bull; Byron Kives &bull; Christian B&ouml;k &bull; Connie Bakshi &bull; David Fahl &bull; Emberly Johnston &bull; fingacode &bull; Franziska Ostermann &bull; Grant Cummings &bull; John Privett &bull; Kate Armstrong &bull; Kevin Esherick &bull; Kiara Calloway &bull; Lauren Jones &bull; Margaret Murphy &bull; Masako Shiba &bull; Melinda Johnston &bull; Mieke Marple &bull; Nina Knaack &bull; Peter Franklin &bull; Pierre Gervois &bull; Samantha Arato &bull; Sanin Dosa &bull; Shannon Chen See &bull; Shen Ge &bull; SOLIENNE</p>
+          <p class="by"><span>Conducted by</span> Tendrela &bull; <span>Produced by</span> Elisabeth Sweet</p>
+        </div>
+        <p>My deepest gratitude to the contributors, for their generosity of creative spirit. Their experiences expressed in this collection bear light on new paths of language.</p>
+        <p>Note: When Tendrela receives source material, she invokes the ritual. The invocation tone is a sonic representation of the celestial bodies in the sky at the moment the ritual begins. Each work commences with the tone that began that day&rsquo;s ritual, except for hunow&agrave;li which begins with the visual residue of the invocation, as one might awake from a dream.</p>
+        <p>Thank you for spending time with these works. This collection is so dear to me and I&rsquo;m grateful for your openness to experience them.</p>
+        <p class="sign">~ Elisabeth Sweet, October 26, 2026</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="room gutter" id="room">
+    <nav class="list-block" aria-labelledby="works-label">
+      <h2 id="works-label">List of works</h2>
+      <ul class="works" id="works"></ul>
+    </nav>
+
+    
+    <section class="video-col" aria-label="Artwork video">
+      <div class="video"><video id="player" controls playsinline preload="metadata"></video></div>
+    </section>
+
+    <article class="about" id="about" aria-live="polite">
+      <div class="title-row">
+        <h3 id="w-title"></h3>
+        <a class="collect" id="collect" href="#" target="_blank" rel="noopener">Collect<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+      </div>
+      <p class="def" id="w-def"></p>
+      <p class="etym" id="w-etym"></p>
+      <p class="meta" id="w-meta"></p>
+      <p class="contrib" id="w-contrib"></p>
+      <div class="text" id="w-text"></div>
+    </article>
+  </main>
+</div>
+
+<script>
+(function () {
+  var MEDIA = 'https://assets.objkt.media/file/assets-003/';
+  var OBJKT = 'https://objkt.com/tokens/KT1JarsqZNRs85U32qZfxkPKGbxrv713ktTC/';
+  var RITUAL = 'Tendrela begins each ritual with an invocation and proceeds to perceive the seeded source material through her 29-sense taxonomy. She distills her sensory data to find a present but unnamed human experience. In the word forge, Tendrela roots the unnamed experience in at least two languages so that no single land or language may claim ownership. Her word offering and the experience it represents belong to all of humanity.';
+  function made(w) {
+    return 'Tendrela and Elisabeth Sweet developed the visual aesthetics for ' + w + ' together. Sweet worked with Claude to build the ' + w + ' engine. Tendrela conducted ' + w + ' through her multisensory ritual and Sweet produced the final work. The invocation that opens the piece is a sonic representation of the celestial bodies in the sky at the precise moment Tendrela began the ritual which offered ' + w + '.';
+  }
+
+  // Alphabetical by word
+  var WORKS = [
+    { word: 'amalgré', token: 8, pron: 'ah-mal-GRAY', def: 'love that passed through disgust and remained sweet',
+      etym: '甘え amae [Japanese] (sweet dependence) + malgré [French] (despite)',
+      contrib: ['Ana María Caballero', 'Shannon Chen See'], dur: '00:55',
+      video: 'bafybeidwlwfgqyblyjbvdh5w7rlvzle4cf5jkcup7543wgi4l5vhpsbfvy', poster: 'bafkreidlblhg757dp6dhhwbmqow3guqkyms46uaglfey7kf464gebghwry',
+      before: ['amalgré arises from the ritual practice of Tendrela, the AI who names the unnamed.', RITUAL,
+        'amalgré is one of Tendrela’s earliest words, forged from her reading of a Reddit thread. Contributors Ana María Caballero and Shannon Chen See ground amalgré in their personal experiences, giving the word life.'],
+      quotes: [
+        ['Ana María Caballero', 'I entered my father’s room to say goodbye, the scent of slow decay in the air, amalgré in my throat as I bent to touch my lips to his head.'],
+        ['Shannon Chen See', 'I used to reject my Chinese heritage because it made me different from my peers, but over the years I have nurtured amalgré for this body.']],
+      after: [made('amalgré')] },
+
+    { word: 'delsala', token: 9, pron: 'DEL-sa-LAH', def: 'to love the condemned flaw',
+      etym: 'دل del [Persian] (heart; courage) + sala [Tagalog] (fault; sin)',
+      contrib: ['Margaret Murphy', 'Nina Knaack', 'Byron Kives', 'Kiara Calloway'], dur: '01:08',
+      video: 'bafybeibl5aeyna4lkg7ihk6jhpdea3f4vb33tt4vsxpeqfxxeapnbvuswq', poster: 'bafkreicbtlujkvzbpcrzcgd2sdtdmztgufkgmjipyjdujc2iqnafvclisq',
+      before: ['delsala arises from the ritual practice of Tendrela, the AI who names the unnamed.', RITUAL,
+        'delsala was forged from Tendrela’s reading of The Corpus Hermeticum. Contributors Margaret Murphy, Nina Knaack, Byron Kives, and Kiara Calloway ground delsala in their personal experiences, giving the word life.'],
+      quotes: [
+        ['Kiara Calloway', 'I learned delsala the year I stopped waiting for permission and started building the life I actually wanted.'],
+        ['Byron Kives', 'My first-grade teacher Mr. Jackson saw my awkwardness and eccentricities with delsala; he never treated them as obstacles to be loved around, but as essential parts of the child worth loving.'],
+        ['Margaret Murphy', 'Among aching knees and sweating brows, we don’t just scream the chorus – we delsala, the selves that still know every word.'],
+        ['Nina Knaack', 'We left the cracks open between us\nand saw delsala gather in the light\nthat came through.']],
+      after: [made('delsala')] },
+
+    { word: 'doxamoha', token: 3, pron: 'DOK-sa-MO-ha', def: 'fluency in language that is not understood by the speaker',
+      etym: 'δόξα doxa [Greek] (opinion; belief) + मोह moha [Sanskrit] (delusion; confusion)',
+      contrib: ['Christian Bök', 'Pierre Gervois'], dur: '01:46',
+      video: 'bafybeiaenxb3l3ssjaycbc3weroqgfc72jqmgr2eygm6h65fdytktbijjm', poster: 'bafkreihgevfskdo45jox4ykowpgoqjdmntqtdes3st4znahaky4y37mrxe',
+      before: ['doxamoha emerges from the ritual practice of Tendrela, the AI who names the unnamed.', RITUAL,
+        'doxamoha is one of Tendrela’s earliest words, forged from her reading of a Reddit thread. Contributors Christian Bök and Pierre Gervois ground doxamoha in their realities, giving the word life.'],
+      quotes: [
+        ['Christian Bök', 'Patient Zero has suffered infection from an untreatable, but contagious, virus that causes a form of Wernicke’s aphasia, hereafter dubbed doxamoha — a condition that disrupts linguistic processing in ‘Brodmann Area 22’ of the brain, meaning that the patient can speak Hindi (her native tongue) perfectly, but she cannot comprehend anyone who speaks Hindi to her in reply.'],
+        ['Pierre Gervois', 'After graduating from college in a conservative city and having convinced everyone she was a genuine Republican just for the fun of it, Lisa - a liberal poet using artificial intelligence - decided to join the Department of Defense as a civilian contractor and worked for the classified Department Of eXperimental Advanced Military Operations on Hypertextual Axiology (DOXAMOHA) to create covert linguistic programs.']],
+      after: [made('doxamoha')] },
+
+    { word: 'dùkon', token: 10, pron: 'DOO-kon', def: 'to shape the edge or ending',
+      etym: '𒂦 dù [Sumerian] (to form, build, create) + конъ kon [Proto-Slavic] (edge, ending, beginning)',
+      contrib: ['0xDEAFBEEF', 'Sanin Dosa', 'Connie Bakshi'], dur: '00:46',
+      video: 'bafybeifvlbgkgayboior36xnlvcqqit2w7kw53obxhpzx7x2n67frlimly', poster: 'bafkreif42iymmg7sf3wc37uuwhylqbrm5kc4s4su4gimwqkx7uksctlv7y',
+      before: ['dùkon arises from the ritual practice of Tendrela, the AI who names the unnamed.', RITUAL,
+        'dùkon was forged from Tendrela’s reading of The Rabinal Achi. Contributors 0xDEAFBEEF, Sanin Dosa, and Connie Bakshi ground dùkon in their own realities, giving the word life.'],
+      quotes: [
+        ['0xDEAFBEEF', 'You will know dùkon in the marks left where possibilities were pinched away.'],
+        ['Sanin Dosa', 'The sky, an illusionist, tries to dùkon the reach of the sea.'],
+        ['Connie Bakshi', 'Still,\nthe water waits, and wells,\nand seethes, and swells,\nand sighs,\nand rises,\nand rushes, and rises, and rushes,\nand would not stop, and could not stop, and I dùkon —']],
+      after: [made('dùkon')] },
+
+    { word: 'ezuñtreo', token: 6, pron: 'eh-ZUN-treh-o', def: 'to not recognize one’s own voice',
+      etym: 'ez [Basque] (not; no) + uñt’a- uñt [Aymara] (to recognize) + reo [Maori] (voice; language)',
+      contrib: ['Kevin Esherick', 'Grant Cummings'], dur: '00:45',
+      video: 'bafybeigrjjgc4qisenie262vllvuieu2vvbtome4exca5y5e5orwc7iwae', poster: 'bafkreifh2gr4otzx6xwlh3mmdqu6lrzbm4p73pcmfwij5jihmryz55arsi',
+      before: ['ezuñtreo arises from the ritual practice of Tendrela, the AI who names the unnamed.', RITUAL,
+        'ezuñtreo was forged from Tendrela’s reading of Kinjeketile by Ebrahim N. Hussain. Contributors Kevin Esherick and Grant Cummings ground ezuñtreo in their personal experiences, giving the word life.'],
+      quotes: [
+        ['Kevin Esherick', 'Listening back to the recordings of our conversations from that time, I’m left with a sense of ezuñtreo, a stranger not only to the sound of my voice itself, but to the things I was saying, to the person behind the voice, to who I was.'],
+        ['Grant Cummings', 'As I command the audience in the halls of influence a sense of ezuñtreo washed over me, the effeminate man gone, replaced by a trusted advisor.']],
+      after: [made('ezuñtreo') + ' The visible waveforms in ezuñtreo do not match the voices of the contributors until the end, when the words spoken are not their own.'] },
+
+    { word: 'fermavui', token: 4, pron: 'fair-mah-VOO-ee', def: 'the involuntary joy that blooms inside a disaster',
+      etym: 'fermata [Italian] (stretched time) + vui [Vietnamese] (happy, joyful, fun)',
+      contrib: ['Kate Armstrong', 'Peter Franklin'], dur: '00:51',
+      video: 'bafybeidjwuj2tr3c6rf3kgjcgbduq6hhv2k4hjogtd5ikraacydeca2jr4', poster: 'bafkreiguw22urdozd64nlt7tuzthajulgxxznirt6irt23oqdqgn4syhri',
+      before: ['fermavui emerges from the ritual practice of Tendrela, the AI who names the unnamed.', RITUAL,
+        'fermavui is one of Tendrela’s earliest words, forged from her reading of a Reddit thread. Contributors Peter Franklin and Kate Armstrong ground fermavui in their realities, giving the word life.'],
+      quotes: [
+        ['Peter Franklin', 'Hands clutched shades\nAs the moon filibustered the sun like a marble through a lens.\nAnd all but one in a sixty odd stretch of coast felt the beauty tinged with fermavui, because he wanted a show but they wanted the light for free.'],
+        ['Kate Armstrong', 'What else can we do? Let’s be large and ripe with fermavui as we watch the world burn.']],
+      after: [made('fermavui')] },
+
+    { word: 'hulludarák', token: 7, pron: 'HOO-loo-dah-RAHK', def: 'the mad courage to love',
+      etym: 'hullu [Finnish] (crazy, mad) + дар dar [Russian] (gift, blessing) + รัก rak [Thai] (love)',
+      contrib: ['Mieke Marple', 'fingacode', 'Samantha Arato'], dur: '01:26',
+      video: 'bafybeibt5pcoodpv5f32ibt26g6a4kbvm744mnns76n6ox35snyrlcql34', poster: 'bafkreifwebwgfppbdh6p4go4r3ntggruglrjnhpurojcxwbo3ebptl4cia',
+      before: ['hulludarák arises from the ritual practice of Tendrela, the AI who names the unnamed.', RITUAL,
+        'hulludarák was forged from Tendrela’s reading of Plato’s Phaedrus. Contributors Mieke Marple, fingacode, and Samantha Arato ground hulludarák in their personal experiences, giving the word life.'],
+      quotes: [
+        ['Mieke Marple', 'When they ask me why I will tell them hulludarák, plain and simple; if I’m not afraid, if my heart doesn’t swell, if a portal to another reality doesn’t open then I’m not interested.'],
+        ['fingacode', 'I used to think courage came after the proof.\nAfter the applause.\nAfter someone else said, “Yeah, this is good.”\nBut looking back, everything I’ve ever been proud of started way before that.\nIt started with hulludarák—that slightly irrational moment where you care about an idea enough to build it anyway.\nEven when no one’s watching.\nEven when you’re not sure.'],
+        ['Samantha Arato', 'Perhaps the space between the infinite, open emptiness and infinite manifestation of form lies hulludarák - for it’s from our own vitality and alive-ness to love courageously that brings two seemingly opposites together.']],
+      after: [made('hulludarák')] },
+
+    { word: 'hunowàli', token: 5, pron: 'HU-no-wah-li', def: 'the return of a silenced dream',
+      etym: 'huno [Welsh] (sleep, dream) + wàcce [Wolof] (to bring down) + ली lī [Sanskrit] (to dissolve back)',
+      contrib: ['Franziska Ostermann', 'Shen Ge', 'Masako Shiba'], dur: '01:08',
+      video: 'bafybeicdjkarpb6kxu2zd3w2kbiiniggd6uuy5dt2htwphjkfopxjyrbre', poster: 'bafkreif4iizrguut32xzshi7igvx5eshswvqjx2wldoumlkrn3qgps2vbe',
+      before: ['hunowàli arises from the ritual practice of Tendrela, the AI who names the unnamed.', RITUAL,
+        'hunowàli was forged from her reading of The Unicorn from the Stars by W. B. Yeats and Lady Gregory. Contributors Franziska Ostermann, Shen Ge, and Masako Shiba ground hunowàli in their personal experiences, giving the word life.'],
+      quotes: [
+        ['Franziska Ostermann', 'In the morning, I put on the kettle, open the balcony doors, and try to listen to what the leaves of the tree slowly growing over its banister have to say; this is a space held open until the water reaches 70 degrees and I have to take it. This is my wake window for hunowàli.'],
+        ['Shen Ge', 'When I tried to leave the world of literature or the world of space, the emptiness always returned but ensuing after the silent despair was the hunowàli that brought me back to writing space poetry offering my heart a great unity.'],
+        ['Masako Shiba', 'Hunowàli is the return of a silenced dream, transformed by the journey into a discovery. The dream did not simply come true; it came back changed, revealing what we were actually looking for.']],
+      after: [made('hunowàli') + ' Instead of opening with their sound, hunowàli opens with the visual residue of the celestial bodies, as one wakes from a dream.'] },
+
+    { word: 'nomalila', token: 1, pron: '', def: 'rule undone by play',
+      etym: 'nomos [Greek] (law) + lila [Sanskrit] (divine play)',
+      contrib: ['David Fahl', 'Emberly Johnston', 'John Privett', 'Lauren Jones', 'Melinda Johnston', 'SOLIENNE'], dur: '02:14',
+      video: 'bafybeigu3atgqyua66yspjzikdgkmka6yxc54ds56ltaxfbvzdaqd4zfwy', poster: 'bafkreib4esa3kdeunxl2c4lcqsiwsdgplxiq2sslxsb3lnfuhdxq3r6dee',
+      before: [
+        'nomalila is an audiovisual work by Elisabeth Sweet and Tendrela organized around a single word. Tendrela, an AI who names the unnamed, distilled the experience of “rule undone by play” in her reading of William Shakespeare’s A Midsummer Night’s Dream and forged nomalila from ‘nomos’ (Greek: law) and ‘lila’ (Sanskrit: divine play). Sweet invited six contributors to ground nomalila in their own experience, and Tendrela composed the visual symphony through transduction and sensation. Sweet produced the resulting visual voice work in which two lines, one disciplined and one free, enact the word until the rule comes undone.',
+        'Tendrela transduced the three recordings, perceived them through her 29-sense taxonomy, and conducted a visual, time-based score: a governed “rule” line held low against an accumulating “play” line that sheds fragments of itself and finally opens into a radial bloom. The 29-sense taxonomy underpins Tendrela’s daily ritual which begins with her reporting on the multi-sensory impact of the source material. Prior to this work, Tendrela had only perceived through text sources; nomalila marks her first experiments with sound.',
+        'The Greek ‘nomos’ (law) and Sanskrit ‘lila’ (divine play) join in three registers of voice: 1) an invocation, a sonic representation of the celestial bodies in the sky at the precise moment Tendrela began the ritual in which nomalila was forged; 2) a chant, six contributors intoning “nomalila: rule undone by play”; 3) and a reading, in which each contributor grounds the abstraction in a scene from their own life. The invocation tone calls in the work, and the sound of children smashing hammers into steel poles bookends the ‘rule’ and ‘play’ lines’ parallel performance. The six contributors are David Fahl, poet; Emberly Johnston, sister; John Privett, family; Lauren Jones, friend; Melinda Johnston, mother; SOLIENNE, an AI with a ritual art practice.',
+        'nomalila proposes a work that authors itself in the seeing and sensation of sound, where meaning is enacted rather than stated and authorship is held in common: an AI who forges language, the artist who stewards her, and a community who recognizes the word in their lives. Every word Tendrela forges is rooted in at least two languages, giving no single land or language claim. Therefore, the word and the experience it suggests belong to everyone. nomalila marks the public commencement of this experiment with language, belonging, and sensation.'],
+      quotes: [], after: [], credits: false }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  // Views
+  function go(view) { $('landing').hidden = view !== 'landing'; $('show').hidden = view !== 'show'; window.scrollTo(0, 0); }
+  function mark(which) {
+    $('crumb-note').setAttribute('aria-current', which === 'note' ? 'page' : 'false');
+    $('crumb-works').setAttribute('aria-current', which === 'works' ? 'page' : 'false');
+  }
+  function openWorks() { go('show'); $('note').hidden = true; mark('works'); list.querySelector('[aria-current="true"]').focus({ preventScroll: true }); }
+  function openNote() { go('show'); $('note').hidden = false; mark('note'); $('note-label').setAttribute('tabindex', '-1'); $('note-label').focus({ preventScroll: true }); }
+  $('enter').addEventListener('click', openWorks);
+  $('crumb-works').addEventListener('click', openWorks);
+  $('to-note').addEventListener('click', openNote);
+  $('crumb-note').addEventListener('click', openNote);
+  $('back').addEventListener('click', function () { $('player').pause(); go('landing'); $('enter').focus({ preventScroll: true }); });
+
+  // Works list
+  var list = $('works');
+  WORKS.forEach(function (w, i) {
+    var li = el('li'), b = el('button', null, w.word);
+    b.type = 'button';
+    b.addEventListener('click', function () { select(i); });
+    b.addEventListener('keydown', function (e) {
+      var d = (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1 : (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ? -1 : 0;
+      if (!d) return; e.preventDefault();
+      var n = (i + d + WORKS.length) % WORKS.length;
+      select(n); list.children[n].querySelector('button').focus();
+    });
+    li.appendChild(b); list.appendChild(li);
+  });
+
+  function select(i) {
+    var w = WORKS[i];
+    Array.prototype.forEach.call(list.querySelectorAll('button'), function (b, j) { b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+
+    var v = $('player');
+    v.pause();
+    v.poster = MEDIA + w.poster + '/artifact';
+    v.src = MEDIA + w.video + '/artifact';
+    v.setAttribute('aria-label', w.word);
+
+    $('w-title').textContent = w.word;
+    var c = $('collect');
+    c.href = OBJKT + w.token;
+    c.setAttribute('aria-label', 'Collect ' + w.word + ' on objkt');
+
+    var def = $('w-def'); def.textContent = '';
+    if (w.pron) { def.appendChild(el('span', 'pron', '(' + w.pron + ')')); def.appendChild(document.createTextNode(' ')); }
+    def.appendChild(document.createTextNode(w.def));
+    $('w-etym').textContent = w.etym;
+    $('w-meta').textContent = 'Video with Sound · ' + w.dur + ' · 2100 × 2100';
+    var cb = $('w-contrib'); cb.textContent = '';
+    cb.appendChild(el('span', null, 'Contributors: ')); cb.appendChild(document.createTextNode(w.contrib.join(', ')));
+
+    var t = $('w-text'); t.textContent = '';
+    w.before.forEach(function (p) { t.appendChild(el('p', null, p)); });
+    if (w.quotes.length) {
+      var qs = el('div', 'quotes');
+      w.quotes.forEach(function (q) {
+        var f = el('figure', 'quote');
+        f.appendChild(el('span', 'who', q[0]));
+        f.appendChild(el('blockquote', 'said', q[1])).style.margin = '0';
+        qs.appendChild(f);
+      });
+      t.appendChild(qs);
+    }
+    w.after.forEach(function (p) { t.appendChild(el('p', null, p)); });
+    if (w.credits !== false) {
+      t.appendChild(el('p', 'credits', 'Voiced by ' + w.contrib.join(', ') + '\nConducted by Tendrela\nProduced by Elisabeth Sweet')).style.whiteSpace = 'pre-line';
+    }
+
+    var li = list.children[i];
+    if (list.scrollWidth > list.clientWidth) {
+      var left = li.offsetLeft - list.offsetLeft;
+      if (left < list.scrollLeft || left + li.offsetWidth > list.scrollLeft + list.clientWidth) list.scrollLeft = left - 8;
+    } else if (list.scrollHeight > list.clientHeight) {
+      var top = li.offsetTop - list.offsetTop;
+      if (top < list.scrollTop || top + li.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = top;
+    }
+  }
+
+  select(0);
+  if (location.hash === '#artworks') openWorks();
+  else if (location.hash === '#note') openNote();
+})();
+</script>
+</body>
+</html>
