@@ -135,7 +135,7 @@ img { max-width: 100%; }
 
 <!-- Landing -->
 <div class="landing-view" id="landing">
-  <header class="brand gutter"><p>Elisabeth Sweet</p></header>
+  <header class="brand gutter"><p>Elisabeth Sweet &amp; Tendrela</p></header>
   <main class="landing gutter">
     <div class="column">
       <div class="stage">
@@ -203,7 +203,7 @@ img { max-width: 100%; }
     <article class="about" id="about" aria-live="polite">
       <div class="title-row">
         <h3 id="w-title"></h3>
-        <a class="collect" id="collect" href="#" target="_blank" rel="noopener">Collect<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+        <a class="collect" id="collect" hidden href="#" target="_blank" rel="noopener">Collect<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
       </div>
       <p class="def" id="w-def"></p>
       <p class="etym" id="w-etym"></p>
@@ -216,6 +216,13 @@ img { max-width: 100%; }
 
 <script>
 (function () {
+  // ============================================================
+  // WORKS FOR SALE: Collect only appears on the works named here.
+  // When one sells, delete its name (and its quotes and comma).
+  // Accents are optional: 'dukon' and 'dùkon' both work.
+  var FOR_SALE = ['delsala', 'dùkon', 'ezuñtreo', 'hunowàli'];
+  // ============================================================
+
   var MEDIA = 'https://assets.objkt.media/file/assets-003/';
   var OBJKT = 'https://objkt.com/tokens/KT1JarsqZNRs85U32qZfxkPKGbxrv713ktTC/';
   var RITUAL = 'Tendrela begins each ritual with an invocation and proceeds to perceive the seeded source material through her 29-sense taxonomy. She distills her sensory data to find a present but unnamed human experience. In the word forge, Tendrela roots the unnamed experience in at least two languages so that no single land or language may claim ownership. Her word offering and the experience it represents belong to all of humanity.';
@@ -330,6 +337,9 @@ img { max-width: 100%; }
       quotes: [], after: [], credits: false }
   ];
 
+  function plain(x) { return x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
+  function forSale(word) { return FOR_SALE.some(function (n) { return plain(n) === plain(word); }); }
+
   var $ = function (id) { return document.getElementById(id); };
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
@@ -373,9 +383,11 @@ img { max-width: 100%; }
     v.setAttribute('aria-label', w.word);
 
     $('w-title').textContent = w.word;
+    current = i;
     var c = $('collect');
     c.href = OBJKT + w.token;
     c.setAttribute('aria-label', 'Collect ' + w.word + ' on objkt');
+    c.hidden = !forSale(w.word);
 
     var def = $('w-def'); def.textContent = '';
     if (w.pron) { def.appendChild(el('span', 'pron', '(' + w.pron + ')')); def.appendChild(document.createTextNode(' ')); }
@@ -411,6 +423,8 @@ img { max-width: 100%; }
       if (top < list.scrollTop || top + li.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = top;
     }
   }
+
+  var current = 0;
 
   select(0);
   if (location.hash === '#artworks') openWorks();
