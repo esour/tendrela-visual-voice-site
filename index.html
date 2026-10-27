@@ -385,8 +385,10 @@ img { max-width: 100%; }
 
     var v = $('player');
     v.pause();
-    v.poster = MEDIA + w.poster + '/artifact';
-    v.src = MEDIA + w.video + '/artifact';
+    // Videos and stills live in the site's own visual-voice-artworks/ folder (named without accents)
+    var slug = plain(w.word);
+    v.poster = 'visual-voice-artworks/' + slug + '.jpg';
+    v.src = 'visual-voice-artworks/' + slug + '.mp4';
     v.setAttribute('aria-label', w.word);
 
     $('w-title').textContent = w.word;
