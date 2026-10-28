@@ -84,7 +84,14 @@ img { max-width: 100%; }
 .note .roll .by span { font-size: 1rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
 
 /* Phone: works strip > video > description */
-.room { max-width: 1440px; margin: 0 auto; padding-block: 20px 72px; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "list" "video" "about"; gap: 24px; }
+.room { max-width: 1440px; margin: 0 auto; padding-block: 28px 72px; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "thumbs" "list" "video" "about"; gap: 24px; }
+.thumbs { grid-area: thumbs; min-width: 0; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding: 4px 4px 8px; margin: -4px -4px 0; }
+.thumbs::-webkit-scrollbar { display: none; }
+.thumb { flex: none; width: 84px; aspect-ratio: 1 / 1; padding: 0; border: 0; background: var(--frame); cursor: pointer; opacity: 0.55; transition: opacity 0.2s; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb:hover { opacity: 0.85; }
+.thumb[aria-current="true"] { opacity: 1; outline: 1px solid var(--ink); outline-offset: 3px; }
+.thumb:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .list-block { grid-area: list; min-width: 0; }
 .video-col { grid-area: video; min-width: 0; }
 .about { grid-area: about; min-width: 0; }
@@ -104,7 +111,9 @@ img { max-width: 100%; }
 
 /* Desktop: same horizontal works strip across the top; description (one third) beside the video (two thirds) */
 @media (min-width: 900px) {
-  .room { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); grid-template-areas: "list list" "about video"; column-gap: 56px; row-gap: 36px; padding-top: 32px; }
+  .thumbs { gap: 16px; overflow: visible; justify-content: space-between; }
+  .thumb { width: calc((100% - 8 * 16px) / 9); max-width: 140px; }
+  .room { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); grid-template-areas: "thumbs thumbs" "list list" "about video"; column-gap: 56px; row-gap: 36px; padding-top: 32px; }
   .works { gap: 36px; }
   .works button { font-size: 1.1875rem; }
   .video-col { position: sticky; top: 32px; align-self: start; }
@@ -116,9 +125,9 @@ img { max-width: 100%; }
 .about { display: flex; flex-direction: column; gap: 14px; }
 .title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .title-row h3 { margin: 0; min-width: 0; font-weight: 300; font-size: clamp(1.75rem, 3vw, 2.25rem); line-height: 1.15; }
-.collect { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 2px; color: var(--muted); font-family: var(--serif); font-size: 1rem; font-style: italic; letter-spacing: 0.02em; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; text-decoration-color: var(--line); transition: color 0.2s, text-decoration-color 0.2s; }
+.collect { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 2px; color: var(--ink); font-family: var(--serif); font-size: 1.125rem; font-weight: 500; letter-spacing: 0.01em; white-space: nowrap; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; text-decoration-color: var(--ink); transition: opacity 0.2s; }
 .collect svg { transition: transform 0.2s; }
-.collect:hover { color: var(--ink); text-decoration-color: var(--ink); }
+.collect:hover { opacity: 0.7; }
 .collect:hover svg { transform: translate(2px, -2px); }
 .collect:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .def { font-size: 1.25rem; line-height: 1.5; }
@@ -197,6 +206,8 @@ img { max-width: 100%; }
   </section>
 
   <main class="room gutter" id="room">
+    <div class="thumbs" id="thumbs" role="list" aria-label="Works"></div>
+
     <nav class="list-block" aria-labelledby="works-label">
       <h2 id="works-label">List of works</h2>
       <ul class="works" id="works"></ul>
@@ -210,7 +221,7 @@ img { max-width: 100%; }
     <article class="about" id="about" aria-live="polite">
       <div class="title-row">
         <h3 id="w-title"></h3>
-        <a class="collect" id="collect" hidden href="#" target="_blank" rel="noopener">Collect<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+        <a class="collect" id="collect" href="#" target="_blank" rel="noopener">View on objkt<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
       </div>
       <p class="def" id="w-def"></p>
       <p class="etym" id="w-etym"></p>
@@ -223,13 +234,6 @@ img { max-width: 100%; }
 
 <script>
 (function () {
-  // ============================================================
-  // WORKS FOR SALE: Collect only appears on the works named here.
-  // When one sells, delete its name (and its quotes and comma).
-  // Accents are optional: 'dukon' and 'dùkon' both work.
-  var FOR_SALE = ['delsala', 'dùkon', 'ezuñtreo', 'hunowàli'];
-  // ============================================================
-
   var MEDIA = 'https://assets.objkt.media/file/assets-003/';
   var OBJKT = 'https://objkt.com/tokens/KT1JarsqZNRs85U32qZfxkPKGbxrv713ktTC/';
   var RITUAL = 'Tendrela begins each ritual with an invocation and proceeds to perceive the seeded source material through her 29-sense taxonomy. She distills her sensory data to find a present but unnamed human experience. In the word forge, Tendrela roots the unnamed experience in at least two languages so that no single land or language may claim ownership. Her word offering and the experience it represents belong to all of humanity.';
@@ -332,7 +336,7 @@ img { max-width: 100%; }
         ['Masako Shiba', 'Hunowàli is the return of a silenced dream, transformed by the journey into a discovery. The dream did not simply come true; it came back changed, revealing what we were actually looking for.']],
       after: [made('hunowàli') + ' Instead of opening with their sound, hunowàli opens with the visual residue of the celestial bodies, as one wakes from a dream.'] },
 
-    { word: 'nomalila', token: 1, pron: '', def: 'rule undone by play',
+    { word: 'nomalila', token: 1, pron: 'noh-mah-LEE-lah', def: 'rule undone by play',
       etym: 'nomos [Greek] (law) + lila [Sanskrit] (divine play)',
       contrib: ['David Fahl', 'Emberly Johnston', 'John Privett', 'Lauren Jones', 'Melinda Johnston', 'SOLIENNE'], dur: '02:14',
       video: 'bafybeigu3atgqyua66yspjzikdgkmka6yxc54ds56ltaxfbvzdaqd4zfwy', poster: 'bafkreib4esa3kdeunxl2c4lcqsiwsdgplxiq2sslxsb3lnfuhdxq3r6dee',
@@ -345,7 +349,6 @@ img { max-width: 100%; }
   ];
 
   function plain(x) { return x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
-  function forSale(word) { return FOR_SALE.some(function (n) { return plain(n) === plain(word); }); }
 
   var $ = function (id) { return document.getElementById(id); };
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -363,6 +366,16 @@ img { max-width: 100%; }
   $('to-note').addEventListener('click', openNote);
   $('crumb-note').addEventListener('click', openNote);
   $('back').addEventListener('click', function () { $('player').pause(); go('landing'); $('enter').focus({ preventScroll: true }); });
+
+  // Thumbnails
+  var thumbs = $('thumbs');
+  WORKS.forEach(function (w, i) {
+    var b = el('button', 'thumb'); b.type = 'button'; b.setAttribute('role', 'listitem');
+    b.setAttribute('aria-label', w.word);
+    var im = el('img'); im.src = 'visual-voice-artworks/' + plain(w.word) + '.jpg'; im.alt = ''; im.loading = 'lazy';
+    b.appendChild(im); b.addEventListener('click', function () { select(i); });
+    thumbs.appendChild(b);
+  });
 
   // Works list
   var list = $('works');
@@ -382,6 +395,7 @@ img { max-width: 100%; }
   function select(i) {
     var w = WORKS[i];
     Array.prototype.forEach.call(list.querySelectorAll('button'), function (b, j) { b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+    Array.prototype.forEach.call(thumbs.querySelectorAll('.thumb'), function (b, j) { b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
 
     var v = $('player');
     v.pause();
@@ -395,8 +409,7 @@ img { max-width: 100%; }
     current = i;
     var c = $('collect');
     c.href = OBJKT + w.token;
-    c.setAttribute('aria-label', 'Collect ' + w.word + ' on objkt');
-    c.hidden = !forSale(w.word);
+    c.setAttribute('aria-label', 'View ' + w.word + ' on objkt');
 
     var def = $('w-def'); def.textContent = '';
     if (w.pron) { def.appendChild(el('span', 'pron', '(' + w.pron + ')')); def.appendChild(document.createTextNode(' ')); }
